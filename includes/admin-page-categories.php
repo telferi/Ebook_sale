@@ -7,25 +7,55 @@ if ( ! defined('ABSPATH') ) {
 
 function my_ebook_plugin_categories_page() {
 
-    // Magyar megjegyzés: Itt lehet létrehozni új kategóriákat.
-    // Kategória létrehozásakor egy könyvtár jön létre a wp-content/uploads/downloads/ könyvtár alatt.
-
+    // Új kategória létrehozása
     if ( isset($_POST['my_ebook_category_submit']) ) {
         $new_category = sanitize_text_field($_POST['new_category'] ?? '');
 
         if ( ! empty($new_category) ) {
-            // Magyar megjegyzés: Könyvtár létrehozása.
+            // Könyvtár létrehozása
             $upload_dir = wp_upload_dir();
             $target_dir = $upload_dir['basedir'] . '/downloads/' . $new_category . '/';
             if ( ! file_exists($target_dir) ) {
                 wp_mkdir_p($target_dir);
                 echo '<div style="color: green;">' . __('Kategória és könyvtár létrehozva: ', 'my-ebook-plugin') . esc_html($new_category) . '</div>';
-                // Magyar megjegyzés: Itt adatbázisba is felvihetjük a kategóriát, ha szükséges.
+                // Adatbázisba is felvihetjük a kategóriát
+                global $wpdb;
+                $wpdb->insert(
+                    $wpdb->prefix . 'ebook_categories',
+                    array(
+                        'category_name' => $new_category
+                    )
+                );
             } else {
                 echo '<div style="color: red;">' . __('Ez a kategória/könyvtár már létezik!', 'my-ebook-plugin') . '</div>';
             }
         }
     }
+
+    // Kategória törlése
+    if ( isset($_POST['delete_category']) ) {
+        $category_id = intval($_POST['category_id'] ?? 0);
+        if ( $category_id > 0 ) {
+            global $wpdb;
+            $category_name = $wpdb->get_var( $wpdb->prepare( "SELECT category_name FROM {$wpdb->prefix}ebook_categories WHERE id = %d", $category_id ) );
+            if ( $category_name ) {
+                $upload_dir = wp_upload_dir();
+                $target_dir = $upload_dir['basedir'] . '/downloads/' . $category_name . '/';
+                if ( file_exists($target_dir) ) {
+                    // Könyvtár törlése
+                    rmdir($target_dir);
+                }
+                // Adatbázisból törlés
+                $wpdb->delete( $wpdb->prefix . 'ebook_categories', array( 'id' => $category_id ) );
+                echo '<div style="color: green;">' . __('Kategória törölve: ', 'my-ebook-plugin') . esc_html($category_name) . '</div>';
+            }
+        }
+    }
+
+    // Kategóriák listázása
+    global $wpdb;
+    $categories = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}ebook_categories" );
+
     ?>
     <div class="wrap">
         <h1><?php _e('Ebook Categories', 'my-ebook-plugin'); ?></h1>
@@ -42,11 +72,17 @@ function my_ebook_plugin_categories_page() {
         </form>
 
         <hr/>
-        <!-- Magyar megjegyzés: Itt megjeleníthetjük a már meglévő kategóriát/böngészését is. -->
         <h2><?php _e('Existing Categories', 'my-ebook-plugin'); ?></h2>
         <ul>
-            <li>Default Category</li>
-            <!-- Magyar megjegyzés: Példa. A valóságban adatbázisból listázzuk. -->
+            <?php foreach ( $categories as $category ) : ?>
+                <li>
+                    <?php echo esc_html( $category->category_name ); ?>
+                    <form method="post" action="" style="display:inline;">
+                        <input type="hidden" name="category_id" value="<?php echo esc_attr( $category->id ); ?>">
+                        <input type="submit" name="delete_category" value="<?php esc_attr_e('Delete', 'my-ebook-plugin'); ?>" class="button button-secondary">
+                    </form>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </div>
     <?php
