@@ -3,7 +3,7 @@
 Plugin Name: Ebook Sales Plugin for Frank
 Plugin URI: https://savinginvesting.blog
 Description: A plugin for managing eBook sales.
-Version: 1.2
+Version: 1.3
 Author: Frank Smith
 Author URI: https://savinginvesting.blog
 License: GPL2
