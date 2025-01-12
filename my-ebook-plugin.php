@@ -31,18 +31,7 @@ require_once MY_EBOOK_PLUGIN_DIR . 'includes/admin-menu.php';
 require_once MY_EBOOK_PLUGIN_DIR . 'includes/admin-page-ebooks.php';
 require_once MY_EBOOK_PLUGIN_DIR . 'includes/admin-page-add.php';
 require_once MY_EBOOK_PLUGIN_DIR . 'includes/admin-page-categories.php';
-
-// Plugin activation hook
-function my_ebook_plugin_activate() {
-    // Initial setup
-}
-register_activation_hook(__FILE__, 'my_ebook_plugin_activate');
-
-// Plugin deactivation hook
-function my_ebook_plugin_deactivate() {
-    // Cleanup
-}
-register_deactivation_hook(__FILE__, 'my_ebook_plugin_deactivate');
+require_once MY_EBOOK_PLUGIN_DIR . 'includes/admin-meta-boxes.php';
 
 // Custom post type regisztrálása
 function create_ebook_post_type() {
@@ -61,7 +50,7 @@ function create_ebook_post_type() {
 }
 add_action('init', 'create_ebook_post_type');
 
-// Plugin aktiválási hook frissítése
+// Plugin aktiválási hook
 function my_ebook_plugin_activate() {
     // Inicializálás
     create_ebook_post_type();
@@ -69,7 +58,7 @@ function my_ebook_plugin_activate() {
 }
 register_activation_hook(__FILE__, 'my_ebook_plugin_activate');
 
-// Plugin deaktiválási hook frissítése
+// Plugin deaktiválási hook
 function my_ebook_plugin_deactivate() {
     // Takarítás
     flush_rewrite_rules();
