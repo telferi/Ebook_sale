@@ -55,6 +55,20 @@ function my_ebook_plugin_activate() {
     // Inicializálás
     create_ebook_post_type();
     flush_rewrite_rules();
+
+    // Adatbázis tábla létrehozás
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'ebook_categories';
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+        id mediumint(9) NOT NULL AUTO_INCREMENT,
+        category_name varchar(255) NOT NULL,
+        PRIMARY KEY (id)
+    ) $charset_collate;";
+
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $sql );
 }
 register_activation_hook(__FILE__, 'my_ebook_plugin_activate');
 
