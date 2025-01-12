@@ -7,9 +7,9 @@ if ( ! defined('ABSPATH') ) {
 
 function my_ebook_plugin_add_new_page() {
     // Magyar megjegyzés: Feldolgozzuk a form küldést, ellenőrzéseket végzünk stb.
-    
+
     if ( isset($_POST['my_ebook_submit']) ) {
-        
+
         // Magyar megjegyzés: Bemeneti adatok ellenőrzése, pl. title, slug, leírás, ár, currency, kategória stb.
         $ebook_title = sanitize_text_field($_POST['ebook_title'] ?? '');
         $ebook_slug  = sanitize_title($_POST['ebook_slug'] ?? '');
@@ -31,7 +31,7 @@ function my_ebook_plugin_add_new_page() {
         $errors = [];
         $allowed_ebook_types = ['application/pdf']; // Magyar megjegyzés: Később bővíthető
         $allowed_image_types = ['image/jpeg','image/png','image/gif']; 
-        
+
         // Ebook fájl ellenőrzése
         if ( ! empty($_FILES['ebook_file']['tmp_name']) ) {
             $ebook_file_type = $_FILES['ebook_file']['type'];
