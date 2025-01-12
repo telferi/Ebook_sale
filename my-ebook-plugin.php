@@ -43,3 +43,35 @@ function my_ebook_plugin_deactivate() {
     // Cleanup
 }
 register_deactivation_hook(__FILE__, 'my_ebook_plugin_deactivate');
+
+// Custom post type regisztrálása
+function create_ebook_post_type() {
+    register_post_type('ebook',
+        array(
+            'labels' => array(
+                'name' => __('Ebooks'),
+                'singular_name' => __('Ebook')
+            ),
+            'public' => true,
+            'has_archive' => true,
+            'supports' => array('title', 'editor', 'thumbnail', 'excerpt', 'comments'),
+            'rewrite' => array('slug' => 'ebooks'),
+        )
+    );
+}
+add_action('init', 'create_ebook_post_type');
+
+// Plugin aktiválási hook frissítése
+function my_ebook_plugin_activate() {
+    // Inicializálás
+    create_ebook_post_type();
+    flush_rewrite_rules();
+}
+register_activation_hook(__FILE__, 'my_ebook_plugin_activate');
+
+// Plugin deaktiválási hook frissítése
+function my_ebook_plugin_deactivate() {
+    // Takarítás
+    flush_rewrite_rules();
+}
+register_deactivation_hook(__FILE__, 'my_ebook_plugin_deactivate');
